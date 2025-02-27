@@ -122,14 +122,14 @@ fun main() {
  */
 class Steps() {
     // Steps list, either holding a gnome or null
-    val steps = mutableListOf<Gnome?>()
+    private val steps = mutableListOf<Gnome?>()
 
-    val STEPCOUNT = 5
+    private val STEP_COUNT = 5
 
     init {
         println("Setting up steps...")
         // Add empty steps
-        for (i in 1..STEPCOUNT) steps.add(null)
+        for (i in 1..STEP_COUNT) steps.add(null)
     }
 
     /**
@@ -141,21 +141,29 @@ class Steps() {
      * etc.
      */
     fun show() {
+        val stepInfo = StringBuilder()
 
+        steps.forEachIndexed{ i, gnome ->
+            stepInfo.append("${i + 1}. ${gnome?.name ?: ""}\n")
+        }
+
+        println(stepInfo)
     }
 
     /**
      * Return the number of gnomes on steps
      */
     fun gnomeCount(): Int {
-        return 0
+        return steps.count { it != null }
     }
 
     /**
      * Place a given gnome on the given step (1-5)
      */
     fun placeGnome(step: Int, gnome: Gnome) {
-
+        if (!(1..STEP_COUNT).contains(step)) { return }
+        removeGnome(gnome)
+        steps[step - 1] = gnome
     }
 
     /**
@@ -163,7 +171,7 @@ class Steps() {
      * step number (1-5) if found, or 0 if not
      */
     fun stepNumOfGnome(gnome: Gnome): Int {
-        return 0
+        return (steps.indexOf(gnome)) + 1
     }
 
     /**
@@ -171,21 +179,23 @@ class Steps() {
      * or null if out of range or empty
      */
     fun gnomeOnStep(stepNum: Int): Gnome? {
-        return null
+        if (!(1..STEP_COUNT).contains(stepNum)) { return null }
+        return steps[stepNum - 1]
     }
 
     /**
      * Clear any gnomes off the given step (1-5)
      */
     fun clearStep(step: Int) {
-
+        if (!(1..STEP_COUNT).contains(step)) { return }
+        steps[step - 1] = null
     }
 
     /**
      * Remove a given gnome from the steps
      */
     fun removeGnome(gnome: Gnome) {
-
+        clearStep(stepNumOfGnome(gnome))
     }
 }
 
@@ -197,5 +207,7 @@ class Gnome(val name: String) {
     init {
         println("Creating a gnome... $name")
     }
+
+    // The steps list could be a companion object of Gnome, as steps is a singleton.
 }
 
